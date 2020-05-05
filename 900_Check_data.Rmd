@@ -1,0 +1,95 @@
+---
+title: "900 Check data"
+author: "DHJ"
+date: "5 5 2020"
+output: html_document
+---
+
+```
+Dataene finner du her:
+Kjemi: K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/data_matrices/all_icpw_samples_long.csv
+-	I første omgang er det NO3-N, TOT-N og TOC vi er interessert i
+-	Det må også genereres parametrene TON (=TOT-N – NO3-N) og TOC/TON (=(TOC*1000)/TON)
+-	Og som nevnt – prøvetakingsfrekvensen varierer mye
+
+Deposisjon: K:/Prosjekter/langtransporterte forurensninger/O-23300 - ICP-WATERS - HWI/Faglige rapporter/2020 report/Deposition data/Processed/dep_TOTN.csv
+-	Her mangler som nevnt data for 1990-1999 for US sites. Hvis ikke James kan fikse det, får vi droppe US enn så lenge
+
+Land cover + annen site info: K:/Prosjekter/langtransporterte forurensninger/O-23300 - ICP-WATERS - HWI/Faglige rapporter/2020 report/Land cover/ICPW_All_Stations_2020_2020_05_04.xlsx
+-	Bruk bare denne som basis – her er infoen oppdatert (i motsetning til filene under som har funksjon bare for å liste opp stasjoner)
+-	Land cover er gitt som %. Det gjør vel at noen vil være godt korrelert med andre, antar jeg (mye bart fjell har lite skog f.eks.). Noe å tenke på
+-	Total_forest og total_shrub_herbaceous er samlekategorier, dvs de er summen av de tre neste kategoriene. Så her må man bruke enten-eller. Hvis det er få i underkategoriene, er det kanskje best å bruke det høyere nivået. Kanskje er det også lurt å starte med det høyere nivået, vet ikke. Lake og water ex lake kan også slås sammen evt
+
+Så var det det med utvalg av stasjoner. Dataene over er gitt for alle stasjoner (så langt det finnes data). Men vi har gjort visse utvalg for MK-analysene, gitt noen kriterier for hvor lite data de kan ha. Jeg tenker at det er greit å bruke samme utvalg av stasjoner – for sammenligning av ulike analyser, og fordi kriteriene var fornuftige. I mappene som starter med «trends» (K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020), ligger det en csv-fil som slutter med «stations». Bruk station_id her for å velge stasjoner for de ulike utvalgene. Som er:
+1)	trends_1992-2016_no3: Her er kriteriene bare fylt for NO3-N, så dette settet skal bare analyseres med tanke på det som respons. Foreslår at du begynner her
+2)	trends_1992-2016_toc_totn_no3_relax_italy: Her er kriteriene fylt for TOC, TOTN og NO3 (TOC ikke for Italia). Her er de mest interessante responsene NO3-N (for sammenligning), TON, TOTN, TOC/TON (det siste vil ikke funke for de italienske)
+3)	trends_2000-2016_totn_no3: Her er kriteriene fylt for TOTN og NO3. Tidsperioden er kortere, så vi får med flere sites. Her er de mest interessante responsene NO3-N, TON, TOTN og TOC/TON (det siste vil ikke funke for alle, og være litt usikre for noen). Dette utvalget har lavest prioritet foreløpig. Det blir mest for å se om ting ser annerledes ut når man får med litt flere sites fra tempererte strøk i Europa
+``` 
+
+
+
+
+## 1. Libraries  
+```{r}
+
+library(dplyr)
+library(readr)
+library(readxl)
+
+```
+
+## 2. Chemistry  
+
+```{r}
+
+df1 <- readr::read_csv("K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/data_matrices/all_icpw_samples_long.csv")
+
+```
+### Check
+```{r}
+
+tab <- xtabs(~station_code, df1)
+length(tab)
+
+xtabs(~parameter, df1)
+
+range(df1$sample_date)
+
+```
+
+## 3. Deposition  
+```{r}
+
+df2 <- read_csv("K:/Prosjekter/langtransporterte forurensninger/O-23300 - ICP-WATERS - HWI/Faglige rapporter/2020 report/Deposition data/Processed/dep_TOTN.csv")
+
+
+
+```
+
+## 4. Land cover  
+```{r}
+
+df3 <- read_excel("K:/Prosjekter/langtransporterte forurensninger/O-23300 - ICP-WATERS - HWI/Faglige rapporter/2020 report/Land cover/ICPW_All_Stations_2020_2020_05_04.xlsx")
+
+
+```
+
+## 5. Selection of stations  
+```{r}
+
+# dir("K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020")
+
+folder1 <- "K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/trends_1992-2016_no3"
+folder2 <- "K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/trends_1992-2016_toc_totn_no3_relax_italy"
+folder3 <- "K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/trends_2000-2016_totn_no3"
+  
+fn1 <- dir(folder1, pattern = "stations.csv")
+fn2 <- dir(folder2, pattern = "stations.csv")
+fn3 <- dir(folder3, pattern = "stations.csv")
+
+df4a <- read_csv(paste0(folder1, "/", fn1))
+df4b <- read_csv(paste0(folder2, "/", fn2))
+df4c <- read_csv(paste0(folder3, "/", fn3))
+
+```
+
