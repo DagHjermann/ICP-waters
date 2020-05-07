@@ -41,8 +41,20 @@ library(readxl)
 ## 2. Chemistry  
 
 ```{r}
+column_types <- cols(
+  station_id = col_double(),
+  station_code = col_character(),
+  station_name = col_character(),
+  sample_date = col_datetime(format = ""),
+  depth1 = col_double(),
+  depth2 = col_double(),
+  parameter = col_character(),
+  unit = col_character(),
+  value = col_double()
+)
 
-df1 <- readr::read_csv("K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/data_matrices/all_icpw_samples_long.csv")
+df1 <- readr::read_csv("K:/Prosjekter/JES/ICPW/Thematic_Trends_Report_2020/data_matrices/all_icpw_samples_long.csv",
+                       col_types = column_types)
 
 ```
 ### Check
